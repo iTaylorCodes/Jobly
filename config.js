@@ -11,9 +11,18 @@ const PORT = +process.env.PORT || 3001;
 
 // Use dev database, testing database, or via env var, production database
 function getDatabaseUri() {
-  return (process.env.NODE_ENV === "test")
-      ? "jobly_test"
-      : process.env.DATABASE_URL || "jobly";
+  if (process.env.DATABASE_URL) {
+    if (process.env.DATABASE_URL.startsWith("postgres://")) {
+      process.env.DATABASE_URL = process.env.DATABASE_URL.replace(
+        "postgres://",
+        "postgresql://"
+      );
+    }
+  }
+
+  return process.env.NODE_ENV === "test"
+    ? "jobly_test"
+    : process.env.DATABASE_URL || "jobly";
 }
 
 // Speed up bcrypt during tests, since the algorithm safety isn't being tested
